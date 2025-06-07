@@ -1,3 +1,9 @@
+<div id="myModal" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 1px solid #ccc; z-index: 1000;">
+	<h2>Вы пришли от партнера Abc!</h2>
+	<p>Введите ваш телеграм и мы свяжемся с вами.</p>
+	<button onclick="document.getElementById('myModal').style.display='none'">Закрыть</button>
+</div>
+
 <script>
 (function() {
     'use strict';
@@ -62,6 +68,29 @@
     	return cleanURL + separator + utmString;
 	}
     
+    function showContactModalPopup() {
+        console.log(window.location.pathname);
+        
+        const utmData = getStoredUTMData() || getUTMFromURL();
+        let hasStormValue = false;
+        
+        if (utmData) {
+            if (utmData.utm_source === "storm" || 
+                utmData.utm_medium === "storm" || 
+                utmData.utm_campaign === "storm" || 
+                utmData.utm_term === "storm" || 
+                utmData.utm_content === "storm") {
+                hasStormValue = true;
+            }
+        }
+        
+        if (window.location.pathname === '/contacts/' && hasStormValue) {
+            setTimeout(function() {
+                document.getElementById('myModal').style.display = 'block';
+            }, 5000);
+        }
+    }
+    
     function initUTMProcessing() {
         const utmFromURL = getUTMFromURL();
         
@@ -97,9 +126,13 @@
     }
     
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initUTMProcessing);
+        document.addEventListener('DOMContentLoaded', function() {
+            initUTMProcessing();
+            showContactModalPopup();
+        });
     } else {
         initUTMProcessing();
+        showContactModalPopup();
     }
 })();
 </script>
